@@ -78,6 +78,9 @@
 		F9E754D0239CC21F00CEE7CC /* WebPortalManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9E754CF239CC21F00CEE7CC /* WebPortalManager.swift */; };
 		F9E754D2239CC28D00CEE7CC /* NSAlert+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9E754D1239CC28D00CEE7CC /* NSAlert+Extension.swift */; };
 		F9E8F34623A12B89002DE5E8 /* String+Encode.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9E8F34523A12B89002DE5E8 /* String+Encode.swift */; };
+		F9E754D5239CC83700CEE7CC /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9E754D4239CC83700CEE7CC /* LoginViewController.swift */; };
+		F9E754D8239CC87700CEE7CC /* MBProgressHUD.m in Sources */ = {isa = PBXBuildFile; fileRef = F9E754D7239CC87700CEE7CC /* MBProgressHUD.m */; };
+		F9E754DC239CCB1500CEE7CC /* LoginSupport.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F9E754DB239CCB1500CEE7CC /* LoginSupport.storyboard */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -202,6 +205,10 @@
 		F9E754CF239CC21F00CEE7CC /* WebPortalManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebPortalManager.swift; sourceTree = "<group>"; };
 		F9E754D1239CC28D00CEE7CC /* NSAlert+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSAlert+Extension.swift"; sourceTree = "<group>"; };
 		F9E8F34523A12B89002DE5E8 /* String+Encode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+Encode.swift"; sourceTree = "<group>"; };
+		F9E754D4239CC83700CEE7CC /* LoginViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
+		F9E754D6239CC87700CEE7CC /* MBProgressHUD.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MBProgressHUD.h; sourceTree = "<group>"; };
+		F9E754D7239CC87700CEE7CC /* MBProgressHUD.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MBProgressHUD.m; sourceTree = "<group>"; };
+		F9E754DB239CCB1500CEE7CC /* LoginSupport.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LoginSupport.storyboard; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -353,6 +360,7 @@
 		4989F98520D0AA300001E564 /* ViewControllers */ = {
 			isa = PBXGroup;
 			children = (
+				F9E754D3239CC81900CEE7CC /* Login Supports */,
 				49BC061B212931F4005A0FE7 /* AboutViewController.swift */,
 				499976C721359F0400E7BF83 /* ClashWebViewContoller.swift */,
 				499A485322ED707300F6C675 /* RemoteConfigViewController.swift */,
@@ -467,6 +475,17 @@
 			path = ProxyConfigHelper;
 			sourceTree = "<group>";
 		};
+		F9E754D3239CC81900CEE7CC /* Login Supports */ = {
+			isa = PBXGroup;
+			children = (
+				F9E754D4239CC83700CEE7CC /* LoginViewController.swift */,
+				F9E754DB239CCB1500CEE7CC /* LoginSupport.storyboard */,
+				F9E754D6239CC87700CEE7CC /* MBProgressHUD.h */,
+				F9E754D7239CC87700CEE7CC /* MBProgressHUD.m */,
+			);
+			path = "Login Supports";
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -568,6 +587,7 @@
 				495340B020DE5F7200B0D3FF /* StatusItemView.xib in Resources */,
 				49CF3B2820CD7465001EBF94 /* Main.storyboard in Resources */,
 				499A485A22ED781100F6C675 /* RemoteConfigAddView.xib in Resources */,
+				F9E754DC239CCB1500CEE7CC /* LoginSupport.storyboard in Resources */,
 				4989F98420D02D200001E564 /* Country.mmdb in Resources */,
 				497F0DF320DE2FE50077AD41 /* Icon.icns in Resources */,
 				4989F98E20D0AE990001E564 /* sampleConfig.yaml in Resources */,
@@ -667,8 +687,10 @@
 				493AEAE3221AE3420016FE98 /* AppVersionUtil.swift in Sources */,
 				49CF3B2120CD7463001EBF94 /* AppDelegate.swift in Sources */,
 				496BDEE021196F1E00C5207F /* Logger.swift in Sources */,
+				F9E754D5239CC83700CEE7CC /* LoginViewController.swift in Sources */,
 				49722FEF211F338B00650A41 /* FileEvent.swift in Sources */,
 				49D176A72355FE680093DD7B /* NetworkChangeNotifier.swift in Sources */,
+				F9E754D8239CC87700CEE7CC /* MBProgressHUD.m in Sources */,
 				4913C82321157D0200F6B87C /* Notification.swift in Sources */,
 				F9203A26236342820020D57D /* AppDelegate+..swift in Sources */,
 				499A485C22ED793C00F6C675 /* NSView+Nib.swift in Sources */,
