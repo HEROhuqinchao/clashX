@@ -62,7 +62,7 @@ jobs:
       if: startsWith(github.ref, 'refs/tags/') || contains(github.event.head_commit.message, '[appcenter]')
       env:
         APPCENTER_DISTRIBUTE_UPLOAD_BUILD_ONLY: true
-        APPCENTER_DISTRIBUTE_DESTINATIONS: Public
+        APPCENTER_DISTRIBUTE_DESTINATIONS: Dler
         APPCENTER_APP_NAME: ClashX
         APPCENTER_API_TOKEN: ${{ secrets.APPCENTER_API_TOKEN }}
         APPCENTER_DISTRIBUTE_FILE: ClashX.dmg

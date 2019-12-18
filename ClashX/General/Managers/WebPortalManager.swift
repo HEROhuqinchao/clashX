@@ -16,9 +16,9 @@ class WebPortalManager: NSObject {
 
     private let entranceUrl = "https://dler.cloud"
     private lazy var apiUrl: String = entranceUrl
-    
-    private var loginWC: NSWindowController? = nil
-    
+
+    private var loginWC: NSWindowController?
+
     private lazy var webPortalMenuItem: NSMenuItem = {
         let menuItem = NSMenuItem(title: "DlerCloud", action: #selector(actionLogin), keyEquivalent: "")
         menuItem.target = self
@@ -27,6 +27,25 @@ class WebPortalManager: NSObject {
 
     private lazy var accountItem: NSMenuItem = {
         return NSMenuItem(title: username ?? "", action: nil, keyEquivalent: "")
+    }()
+
+    private lazy var usedTrafficItem: NSMenuItem = {
+        return NSMenuItem(title: "已用流量: 未知", action: nil, keyEquivalent: "")
+    }()
+
+    private lazy var unusedTrafficItem: NSMenuItem = {
+        return NSMenuItem(title: "剩余流量: 未知", action: nil, keyEquivalent: "")
+    }()
+
+    private lazy var planTimeItem: NSMenuItem = {
+        return NSMenuItem(title: "到期时间: 未知", action: nil, keyEquivalent: "")
+    }()
+
+    private lazy var refreshInfoItem: NSMenuItem = {
+        let item = NSMenuItem(title: "刷新账号信息", action: nil, keyEquivalent: "")
+        item.action = #selector(updateAccountInfo)
+        item.target = self
+        return item
     }()
 
     private lazy var refreshRemoteConfigItem: NSMenuItem = {
@@ -40,10 +59,29 @@ class WebPortalManager: NSObject {
         item.target = self
         return item
     }()
-    
+
     private lazy var menus: NSMenu = {
         let m = NSMenu(title: "")
-        m.items = [accountItem, refreshRemoteConfigItem, logoutItem]
+        let items = [
+            accountItem,
+            NSMenuItem.separator(),
+            usedTrafficItem,
+            unusedTrafficItem,
+            planTimeItem,
+            NSMenuItem.separator(),
+            refreshRemoteConfigItem,
+            refreshInfoItem,
+            logoutItem,
+        ]
+        for item in items {
+            if item.target == nil {
+                item.target = self
+            }
+            if item.action == nil {
+                item.action = #selector(empty)
+            }
+            m.addItem(item)
+        }
         return m
     }()
 
@@ -77,8 +115,9 @@ class WebPortalManager: NSObject {
     func addWebProtalMenuItem(_ menu: inout NSMenu) {
         menu.insertItem(webPortalMenuItem, at: 0)
         updateWebProtalMenu()
+        updateAccountInfo()
     }
-    
+
     func updateWebProtalMenu() {
         if WebPortalManager.shared.isLogin {
             webPortalMenuItem.title = "Dler Cloud：已登录"
@@ -87,12 +126,6 @@ class WebPortalManager: NSObject {
             webPortalMenuItem.title = "Dler Cloud：未登录"
             webPortalMenuItem.submenu = nil
         }
-    }
-    
-    @IBAction func actionWebProtal(_ sender: Any) {
-        if WebPortalManager.shared.isLogin {return}
-        
-        
     }
 
     func refreshApiUrl(complete: (() -> Void)? = nil) {
@@ -157,21 +190,29 @@ class WebPortalManager: NSObject {
             if let token = json["data"]["token"].string {
                 self.username = mail
                 self.token = token
+                self.updateAccountInfoMenu(json["data"])
                 complete?(nil)
             } else {
+                self.updateAccountInfoMenu(nil)
                 complete?("登录失败" + json["msg"].stringValue)
             }
         }
     }
 
     func getRemoteConfig(token: String, complete: ((String?, String?) -> Void)? = nil) {
-        req("/api/v1/managed/clash_ss", method: .post, parameters: ["access_token": token], encoding: JSONEncoding.default).responseJSON { res in
+        req("/api/v1/managed/clash_ss", method: .post, parameters: ["access_token": token], encoding: JSONEncoding.default).responseJSON {
+            [weak self] res in
             guard let value = try? res.result.get() else {
                 complete?("请求失败", nil)
                 return
             }
 
             let json = JSON(value)
+            if json["ret"].intValue == 403 {
+                self?.actionLogout()
+                NSUserNotificationCenter.default.postLoginExpire()
+                return
+            }
             guard let token = json["data"].string else {
                 complete?("解析失败", nil)
                 return
@@ -210,8 +251,9 @@ class WebPortalManager: NSObject {
             complete?(nil, finalConfig)
         }
     }
-    
+
     @objc func actionLogin() {
+        guard !isLogin else { return }
         if let wc = loginWC {
             wc.becomeFirstResponder()
             NSApp.activate(ignoringOtherApps: true)
@@ -228,6 +270,7 @@ class WebPortalManager: NSObject {
         username = nil
         token = nil
         updateWebProtalMenu()
+        updateAccountInfoMenu(nil)
     }
 
     @objc func actionRefreshConfigUrl() {
@@ -250,11 +293,51 @@ class WebPortalManager: NSObject {
             })
         }
     }
+
+    @objc func updateAccountInfo() {
+        guard let token = self.token else {
+            return
+        }
+        req("/api/v1/information", method: .post, parameters: ["access_token": token], encoding: JSONEncoding.default).responseJSON { res in
+
+            switch res.result {
+            case let .success(value):
+                let json = JSON(value)
+                if json["ret"].intValue == 403 {
+                    self.actionLogout()
+                    NSUserNotificationCenter.default.postLoginExpire()
+                    return
+                }
+                self.updateAccountInfoMenu(json["data"])
+            case let .failure(err):
+                Logger.log("updateAccountInfo fail,\(err.localizedDescription)", level: .error)
+                NSUserNotificationCenter.default.postGetAccountInfoFailNotice()
+            }
+        }
+    }
+
+    func updateAccountInfoMenu(_ json: JSON?) {
+        usedTrafficItem.title = "已用流量: \(json?["usedTraffic"].stringValue ?? "")"
+        unusedTrafficItem.title = "剩余流量: \(json?["unusedTraffic"].stringValue ?? "")"
+        planTimeItem.title = "到期时间: \(json?["plan_time"].stringValue ?? "")"
+    }
+
+    @objc func empty() {}
 }
 
-extension WebPortalManager : NSWindowDelegate {
+extension WebPortalManager: NSWindowDelegate {
     func windowWillClose(_ notification: Notification) {
         loginWC = nil
         updateWebProtalMenu()
+    }
+}
+
+extension NSUserNotificationCenter {
+    func postGetAccountInfoFailNotice() {
+        post(title: "DlerCloud", info: "更新账号信息失败")
+    }
+
+    func postLoginExpire() {
+        post(title: "DlerCloud", info: "登陆信息过期")
     }
 }

@@ -684,7 +684,7 @@ extension AppDelegate {
         #else
             Fabric.with([Crashlytics.self])
             DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
-                MSAppCenter.start("dce6e9a3-b6e3-4fd2-9f2d-35c767a99663", withServices: [
+                MSAppCenter.start("8eb62a7d-23f7-4822-aa81-f4069a561086", withServices: [
                     MSAnalytics.self,
                 ])
             }
